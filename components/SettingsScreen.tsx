@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Switch } from 'react-native';
 import { Picker as SelectPicker } from '@react-native-picker/picker';
+import SoundControl from './SoundControl';
+
 
 export default function SettingsScreen() {
     const [duration, setDuration] = useState('25');
@@ -45,6 +47,8 @@ export default function SettingsScreen() {
                     thumbColor={voiceEnabled ? '#4f46e5' : '#f1f5f9'}
                 />
             </View>
+
+            <SoundControl />
         </View>
     );
 }

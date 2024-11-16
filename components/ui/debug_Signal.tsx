@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, Dimensions, Button } from 'react-native';
+import { Gyroscope } from 'expo-sensors';
 import { Accelerometer } from 'expo-sensors';
 import Svg, { Polyline, Line, Circle, Text as SvgText } from 'react-native-svg';
 
@@ -24,6 +25,9 @@ export default function App() {
         timestamp: Array(MAX_DATA_POINTS).fill(Date.now()),
         currentBreathingType: 'Unknown',
     });
+
+    const [allAccData, setAllAccData] = useState<[number, number, number, number][]>([]);
+    const [allGyroData, setAllGyroData] = useState<[number, number, number, number][]>([]);
 
     // ローパスフィルタの実装
     const lowPassFilter = (newValue: number, prevFiltered: number) => {
@@ -70,7 +74,7 @@ export default function App() {
         if (periods.length === 0) return '計測中...';
 
         // 直近3回の呼吸を分析
-        const recentPeriods = periods.slice(-3);
+        const recentPeriods = periods?.slice(-3);
         const typeCount = recentPeriods.reduce((acc: { [x: string]: any; }, curr: { type: string | number; }) => {
             acc[curr.type] = (acc[curr.type] || 0) + 1;
             return acc;
@@ -82,6 +86,33 @@ export default function App() {
     };
 
     useEffect(() => {
+        let subscription;
+
+        const enableGyroscope = async () => {
+            try {
+                // ジャイロセンサーが利用可能か確認
+                const isAvailable = await Gyroscope.isAvailableAsync();
+                if (!isAvailable) {
+                    alert('ジャイロセンサーが利用できません');
+                    return;
+                }
+
+                await Gyroscope.setUpdateInterval(100); // 10Hz
+                subscription = Gyroscope.addListener(data => {
+                    setAllGyroData(prev => {
+                        return [...prev, [data.x, data.y, data.z, data.timestamp]];
+                    });
+                });
+            } catch (error) {
+                alert('ジャイロセンサーの初期化に失敗しました: ' + error.message);
+            }
+        };
+
+        enableGyroscope();
+        return () => subscription && subscription.remove();
+    }, []);
+
+    useEffect(() => {
         let subscription: { remove: any; };
 
         const enableAccelerometer = async () => {
@@ -89,37 +120,8 @@ export default function App() {
             subscription = Accelerometer.addListener(data => {
                 setCurrentData(data);
 
-                setHistory(prev => {
-                    // 合成加速度の計算
-                    const magnitude = Math.sqrt(data.x ** 2 + data.y ** 2 + data.z ** 2);
-                    const now = Date.now();
-
-                    // 新しいデータを追加
-                    const newRaw = [...prev.raw.slice(1), magnitude];
-
-                    // フィルタリング
-                    const lastFiltered = prev.filtered[prev.filtered.length - 1];
-                    const newFiltered = [...prev.filtered.slice(1),
-                    lowPassFilter(magnitude, lastFiltered)];
-
-                    // タイムスタンプの更新
-                    const newTimestamp = [...prev.timestamp.slice(1), now];
-
-                    // ピーク検出と周期分析
-                    const newPeaks = detectPeaks(newFiltered, newTimestamp);
-                    const newPeriods = analyzeBreathing(newPeaks);
-
-                    // 現在の呼吸タイプを判定
-                    const currentType = determineCurrentBreathingType(newPeriods);
-
-                    return {
-                        raw: newRaw,
-                        filtered: newFiltered,
-                        peaks: newPeaks,
-                        breathingPeriods: newPeriods,
-                        timestamp: newTimestamp,
-                        currentBreathingType: currentType,
-                    };
+                setAllAccData(prev => {
+                    return [...prev, [data.x, data.y, data.z, data.timestamp]];
                 });
             });
         };
@@ -200,7 +202,14 @@ export default function App() {
 
     return (
         <View style={styles.container}>
-            <Button title="log history" onPress={() => console.log("history", history)} />
+            <Button title="log history" onPress={() => console.log("history", {
+                gyro: allGyroData,
+                acc: allAccData
+            })} />
+            <Button title="reset history" onPress={() => {
+                setAllGyroData([]);
+                setAllAccData([]);
+            }} />
             <Text style={styles.title}>呼吸パターン分析</Text>
             {renderGraph()}
         </View>
