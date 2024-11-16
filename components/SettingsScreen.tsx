@@ -4,6 +4,7 @@ import { View, Text, StyleSheet, Switch } from 'react-native';
 import { Picker as SelectPicker } from '@react-native-picker/picker';
 import SoundControl from './SoundControl';
 import { isRunningInProduction } from '@/constants/production';
+import DebugHaptics from '@/components/ui/debug_Haptics';
 
 
 export default function SettingsScreen() {
@@ -49,7 +50,8 @@ export default function SettingsScreen() {
                 />
             </View>
 
-            {__DEV__ && !isRunningInProduction && <SoundControl />}
+            {/* {__DEV__ && !isRunningInProduction && <SoundControl />} */}
+            {__DEV__ && !isRunningInProduction && <DebugHaptics />}
         </View>
     );
 }
