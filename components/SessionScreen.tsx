@@ -7,12 +7,39 @@ import BreathingCircle from './BreathingCircle';
 import DebugSignal from "@/components/ui/debug_Signal";
 import { isRunningInProduction } from '@/constants/production';
 import { useBreathingData } from '@/hooks/useBreathingData';
-import { BreathingType } from '@/hooks/metrics/types';
 import * as Haptics from 'expo-haptics';
+
+import { PermissionsAndroid } from 'react-native';
+
+async function requestVibrationPermission() {
+    try {
+        const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.VIBRATE,
+            {
+                title: "Vibration Permission",
+                message: "This app needs access to vibrate your device.",
+                buttonNeutral: "Ask Me Later",
+                buttonNegative: "Cancel",
+                buttonPositive: "OK"
+            }
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+            console.log("You can use the vibration");
+        } else {
+            console.log("Vibration permission denied");
+        }
+    } catch (err) {
+        console.warn(err);
+    }
+}
 
 export default function SessionScreen() {
     const [isActive, setIsActive] = useState(true);
     const [timeRemaining, setTimeRemaining] = useState(25 * 60); // 25 minutes in seconds
+
+    useEffect(() => {
+        requestVibrationPermission();
+    }, []);
 
     useEffect(() => {
         let interval: NodeJS.Timeout;

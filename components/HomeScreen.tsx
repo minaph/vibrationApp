@@ -4,7 +4,6 @@ import React from 'react';
 import { Image } from "expo-image";
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Dimensions } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-
 interface HomeScreenProps {
   onStartSession: () => void;
   onOpenSettings: () => void;
