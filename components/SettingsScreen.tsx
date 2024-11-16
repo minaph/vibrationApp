@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Switch } from 'react-native';
 import { Picker as SelectPicker } from '@react-native-picker/picker';
 import SoundControl from './SoundControl';
+import { isRunningInProduction } from '@/constants/production';
 
 
 export default function SettingsScreen() {
@@ -48,7 +49,7 @@ export default function SettingsScreen() {
                 />
             </View>
 
-            <SoundControl />
+            {__DEV__ && !isRunningInProduction && <SoundControl />}
         </View>
     );
 }
