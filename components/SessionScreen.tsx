@@ -4,6 +4,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Bell, Pause } from 'lucide-react-native';
 import Timer from './Timer';
 import BreathingCircle from './BreathingCircle';
+import DebugSignal from "@/components/ui/debug_Signal";
 
 export default function SessionScreen() {
     const [isActive, setIsActive] = useState(true);
@@ -29,6 +30,7 @@ export default function SessionScreen() {
 
     return (
         <View style={styles.container}>
+            {__DEV__ && <DebugSignal />}
             <Timer time={formatTime(timeRemaining)} />
             <BreathingCircle />
 
