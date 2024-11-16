@@ -2,13 +2,13 @@
 import React from 'react';
 
 import { Image } from "expo-image";
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView,Dimensions} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Dimensions } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
 interface HomeScreenProps {
-    onStartSession: () => void;
-    onOpenSettings: () => void;
-    onOpenGuide: () => void;
+  onStartSession: () => void;
+  onOpenSettings: () => void;
+  onOpenGuide: () => void;
 }
 
 const PlaceholderImage = require("../assets/images/home2.jpg");
@@ -16,48 +16,48 @@ const { width, height } = Dimensions.get("window");
 
 
 const HomeScreen: React.FC<HomeScreenProps> = ({
-    onStartSession,
-    onOpenSettings,
-    onOpenGuide
+  onStartSession,
+  onOpenSettings,
+  onOpenGuide
 }) => {
-    return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.container2}>
-          <View style={styles.imageContainer}>
-            <Image source={PlaceholderImage} style={styles.image} />
-          </View>
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.container2}>
+        <View style={styles.imageContainer}>
+          <Image source={PlaceholderImage} style={styles.image} />
         </View>
+      </View>
 
-          <Text style={[styles.title,styles.textBackground]}>Digital Zen Master</Text>
-          <Text style={[styles.subtitle,styles.textBackground]}>デジタル座禅アシスタント</Text>
+      <Text style={[styles.title, styles.textBackground]}>Digital Zen Master</Text>
+      {/* <Text style={[styles.subtitle, styles.textBackground]}>デジタル座禅アシスタント</Text> */}
 
-          <TouchableOpacity
-            style={styles.primaryButton}
-            onPress={onStartSession}
-          >
-            <Feather name="play" size={24} color="white" />
-            <Text style={styles.primaryButtonText}>セッション開始</Text>
-          </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.primaryButton}
+        onPress={onStartSession}
+      >
+        <Feather name="play" size={24} color="white" />
+        <Text style={styles.primaryButtonText}>セッション開始</Text>
+      </TouchableOpacity>
 
-          <View style={styles.buttonRow}>
-            <TouchableOpacity
-              style={styles.secondaryButton}
-              onPress={onOpenSettings}
-            >
-              <Feather name="settings" size={24} color="#475569" />
-              <Text style={styles.secondaryButtonText}>設定</Text>
-            </TouchableOpacity>
+      <View style={styles.buttonRow}>
+        <TouchableOpacity
+          style={styles.secondaryButton}
+          onPress={onOpenSettings}
+        >
+          <Feather name="settings" size={24} color="#475569" />
+          <Text style={styles.secondaryButtonText}>設定</Text>
+        </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.secondaryButton}
-              onPress={onOpenGuide}
-            >
-              <Feather name="info" size={24} color="#475569" />
-              <Text style={styles.secondaryButtonText}>ガイド</Text>
-            </TouchableOpacity>
-          </View>
-      </SafeAreaView>
-    );
+        <TouchableOpacity
+          style={styles.secondaryButton}
+          onPress={onOpenGuide}
+        >
+          <Feather name="info" size={24} color="#475569" />
+          <Text style={styles.secondaryButtonText}>ガイド</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
+  );
 };
 
 export default HomeScreen;
@@ -107,14 +107,15 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontFamily: "NotoSansJP-Bold",
     color: "white",
-    marginBottom: 5,
-  },
-  subtitle: {
-    fontSize: 16,
-    fontFamily: "NotoSansJP-Regular",
-    color: "#64748b",
+    // marginBottom: 5,
     marginBottom: 500,
   },
+  // subtitle: {
+  //   fontSize: 16,
+  //   fontFamily: "NotoSansJP-Regular",
+  //   color: "#64748b",
+  //   marginBottom: 500,
+  // },
   textBackground: {
     backgroundColor: "black",
     paddingHorizontal: 1, // 横方向の余白

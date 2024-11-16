@@ -1,7 +1,7 @@
 // breathingAnalysis.ts
 
 import { CONSTANTS } from './constants';
-import { Peak, Peaks, Interval, Intervals } from './types';
+import { Peak, Peaks, Interval, Intervals, StabilityStatus, BreathingType } from './types';
 import { calculateStandardDeviation } from './utils';
 
 export function detectPeaks(data: number[], timestamps: number[]): Peaks {
@@ -82,7 +82,7 @@ export function calculateIntervals(maxima: Peak[], minima: Peak[]): Intervals {
 }
 
 export function determineBreathingType(intervals: Intervals): {
-  type: string;
+  type: BreathingType;
   period: number;
   detail: string;
 } {
@@ -111,10 +111,10 @@ export function determineBreathingType(intervals: Intervals): {
   const exhaleStdDev = calculateStandardDeviation(recentExhales, avgExhale);
   const isStable = inhaleStdDev < BREATHING_THRESHOLDS.STABILITY_THRESHOLD &&
     exhaleStdDev < BREATHING_THRESHOLDS.STABILITY_THRESHOLD;
-  const stabilityStatus = isStable ? '安定' : '不安定';
+  const stabilityStatus: StabilityStatus = isStable ? '安定' : '不安定';
 
   // 呼吸タイプの判定
-  let type: string;
+  let type: `通常呼吸 (${StabilityStatus})` | `深呼吸 (${StabilityStatus})`;
   if (avgInhale >= BREATHING_THRESHOLDS.DEEP_INHALE_MIN &&
     avgExhale <= BREATHING_THRESHOLDS.DEEP_EXHALE_MAX) {
     type = `深呼吸 (${stabilityStatus})`;

@@ -10,7 +10,7 @@ export const initialState: HistoryState = {
   peaks: { maxima: [], minima: [] },
   intervals: { maxToMax: [], maxToMin: [], minToMax: [] },
   timestamp: Array<number>(CONSTANTS.MAX_DATA_POINTS).fill(Date.now()),
-  breathingType: 'unknown',
+  breathingType: '計算中...',
   breathingDetail: '',
   currentPeriod: 0,
   yRange: { min: -1, max: 1 },

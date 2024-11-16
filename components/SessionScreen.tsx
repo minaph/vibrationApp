@@ -1,11 +1,14 @@
 // SessionScreen.tsx
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { Bell, Pause } from 'lucide-react-native';
+import { Play, Pause } from 'lucide-react-native';
 import Timer from './Timer';
 import BreathingCircle from './BreathingCircle';
 import DebugSignal from "@/components/ui/debug_Signal";
 import { isRunningInProduction } from '@/constants/production';
+import { useBreathingData } from '@/hooks/useBreathingData';
+import { BreathingType } from '@/hooks/metrics/types';
+import * as Haptics from 'expo-haptics';
 
 export default function SessionScreen() {
     const [isActive, setIsActive] = useState(true);
@@ -29,6 +32,14 @@ export default function SessionScreen() {
         return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
     };
 
+    const { breathingType } = useBreathingData();
+
+    useEffect(() => {
+        if (breathingType.startsWith("深呼吸")) {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        }
+    }, [breathingType]);
+
     return (
         <View style={styles.container}>
             {__DEV__ && !isRunningInProduction && <DebugSignal />}
@@ -39,8 +50,10 @@ export default function SessionScreen() {
                 style={styles.pauseButton}
                 onPress={() => setIsActive(!isActive)}
             >
-                <Pause color="white" size={24} />
-                <Text style={styles.pauseButtonText}>一時停止</Text>
+                {/* <Pause color="white" size={24} /> */}
+                {isActive ? <Pause color="white" size={24} /> : <Play color="white" size={24} />}
+                {/* <Text style={styles.pauseButtonText}>一時停止</Text> */}
+                <Text style={styles.pauseButtonText}>{isActive ? '一時停止' : '再開'}</Text>
             </TouchableOpacity>
         </View>
     );

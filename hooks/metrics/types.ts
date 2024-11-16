@@ -35,10 +35,20 @@ export interface HistoryState {
   peaks: Peaks;
   intervals: Intervals;
   timestamp: number[];
-  breathingType: string;
+  breathingType: BreathingType;
   breathingDetail: string;
   currentPeriod: number;
   yRange: Range;
   yMARange: Range;
   yDeviationRange: Range;
+}
+
+
+export type StabilityStatus = "安定" | "不安定"
+export type BreathingDeepness = "深" | "通常"
+export type BreathingType = `${BreathingDeepness}呼吸 (${StabilityStatus})` | '計算中...'
+export interface Breathing {
+  type: BreathingType;
+  detail: string;
+  period: number;
 }
