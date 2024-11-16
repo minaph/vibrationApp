@@ -10,11 +10,11 @@ interface HomeScreenProps {
 }
 
 
-export default function HomeScreen({
+const HomeScreen: React.FC<HomeScreenProps> = ({
     onStartSession,
     onOpenSettings,
     onOpenGuide
-}: HomeScreenProps) {
+}) => {
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.content}>
@@ -53,7 +53,9 @@ export default function HomeScreen({
             </View>
         </SafeAreaView>
     );
-}
+};
+
+export default HomeScreen;
 
 const styles = StyleSheet.create({
     container: {
