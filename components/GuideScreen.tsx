@@ -2,8 +2,9 @@ import React from "react";
 import { StyleSheet, Text, View, Dimensions, ScrollView } from "react-native";
 import { Image } from "expo-image";
 
-const Image1 = require("../assets/images/home.jpg");
-const Image2 = require("../assets/images/home.jpg");
+const Image1 = require("../assets/images/how_to_use1.jpg");
+const Image2 = require("../assets/images/how_to_use2.jpg");
+const Image3 = require("../assets/images/how_to_use3.jpg");
 const { width, height } = Dimensions.get("window");
 
 export default function GuideScreen() {
@@ -12,8 +13,8 @@ export default function GuideScreen() {
       {/* 使い方セクション */}
       <View style={styles.section}>
         <Text style={styles.title}>使い方ガイド</Text>
+        <Text style={styles.subtitle}>【使用手順】</Text>
 
-        <Text style={styles.subtitle}>【基本的な使用手順】</Text>
         <Text style={styles.text}>
           1. 静かな場所を選び、座りやすい姿勢をとります{"\n"}
           2. スマートフォンを腹部に置き、固定します{"\n"}
@@ -21,6 +22,9 @@ export default function GuideScreen() {
           4. ガイダンスに従って呼吸を整えます{"\n"}
           5. セッション終了後、結果を確認します
         </Text>
+        <Image source={Image1} style={styles.image} />
+        <Image source={Image2} style={styles.image} />
+        <Image source={Image3} style={styles.image} />
       </View>
 
       {/* 座禅の効果セクション */}
@@ -146,8 +150,8 @@ const styles = StyleSheet.create({
     color: "#666666",
   },
   image: {
-    width: width - 64,
-    height: 200,
+    width: width - 80,
+    height: 300,
     marginVertical: 12,
     borderRadius: 8,
   },
