@@ -71,7 +71,7 @@ export default function SessionScreen() {
     useEffect(() => {
         if (breathingType.startsWith("深呼吸")) {
             selectSound(cheerSound);
-            
+            playSound();
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         }
     }, [breathingType]);
