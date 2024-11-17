@@ -116,7 +116,7 @@ export function determineBreathingType(intervals: Intervals): {
   // 呼吸タイプの判定
   let type: `通常呼吸 (${StabilityStatus})` | `深呼吸 (${StabilityStatus})`;
   if (avgInhale >= BREATHING_THRESHOLDS.DEEP_INHALE_MIN &&
-    avgExhale <= BREATHING_THRESHOLDS.DEEP_EXHALE_MAX) {
+    avgExhale >= BREATHING_THRESHOLDS.DEEP_EXHALE_MIN) {
     type = `深呼吸 (${stabilityStatus})`;
   } else {
     type = `通常呼吸 (${stabilityStatus})`;
