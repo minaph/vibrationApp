@@ -95,9 +95,9 @@ export function determineBreathingType(intervals: Intervals): {
   }
 
   // 直近の呼吸データを取得
-  const recentInhales = maxToMin.slice(-BREATHING_THRESHOLDS.RECENT_BREATHS)
+  const recentExhales = maxToMin.slice(-BREATHING_THRESHOLDS.RECENT_BREATHS)
     .map(interval => interval.interval);
-  const recentExhales = minToMax.slice(-BREATHING_THRESHOLDS.RECENT_BREATHS)
+  const recentInhales = minToMax.slice(-BREATHING_THRESHOLDS.RECENT_BREATHS)
     .map(interval => interval.interval);
 
   // 平均値計算
