@@ -95,9 +95,9 @@ export function determineBreathingType(intervals: Intervals): {
   }
 
   // 直近の呼吸データを取得
-  const recentExhales = maxToMin.slice(-BREATHING_THRESHOLDS.RECENT_BREATHS)
+  const recentInhales = maxToMin.slice(-BREATHING_THRESHOLDS.RECENT_BREATHS)
     .map(interval => interval.interval);
-  const recentInhales = minToMax.slice(-BREATHING_THRESHOLDS.RECENT_BREATHS)
+  const recentExhales = minToMax.slice(-BREATHING_THRESHOLDS.RECENT_BREATHS)
     .map(interval => interval.interval);
 
   // 平均値計算
@@ -116,7 +116,7 @@ export function determineBreathingType(intervals: Intervals): {
   // 呼吸タイプの判定
   let type: `通常呼吸 (${StabilityStatus})` | `深呼吸 (${StabilityStatus})`;
   if (avgInhale >= BREATHING_THRESHOLDS.DEEP_INHALE_MIN &&
-    avgExhale <= BREATHING_THRESHOLDS.DEEP_EXHALE_MAX) {
+    avgExhale >= BREATHING_THRESHOLDS.DEEP_EXHALE_MIN) {
     type = `深呼吸 (${stabilityStatus})`;
   } else {
     type = `通常呼吸 (${stabilityStatus})`;
