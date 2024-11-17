@@ -8,7 +8,7 @@ import DebugHaptics from '@/components/ui/debug_Haptics';
 
 
 export default function SettingsScreen() {
-    const [duration, setDuration] = useState('25');
+    const [duration, setDuration] = useState('1');
     const [vibrationEnabled, setVibrationEnabled] = useState(true);
     const [voiceEnabled, setVoiceEnabled] = useState(true);
 
@@ -23,6 +23,10 @@ export default function SettingsScreen() {
                     onValueChange={(itemValue) => setDuration(itemValue)}
                     style={styles.picker}
                 >
+                    <SelectPicker.Item label="1分" value="15" />
+                    <SelectPicker.Item label="3分" value="15" />
+                    <SelectPicker.Item label="5分" value="15" />
+                    <SelectPicker.Item label="10分" value="15" />
                     <SelectPicker.Item label="15分" value="15" />
                     <SelectPicker.Item label="25分" value="25" />
                     <SelectPicker.Item label="40分" value="40" />

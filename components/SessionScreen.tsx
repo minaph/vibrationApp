@@ -33,9 +33,9 @@ async function requestVibrationPermission() {
     }
 }
 
-export default function SessionScreen() {
+export default function SessionScreen({onEnd}: {onEnd: () => void}) {
     const [isActive, setIsActive] = useState(true);
-    const [timeRemaining, setTimeRemaining] = useState(25 * 60); // 25 minutes in seconds
+    const [timeRemaining, setTimeRemaining] = useState(1 * 60);
 
     const { playSound, pauseSound, selectSound, soundFiles } = useSound({
         soundAssets: require.context('../assets/sounds', true, /\.mp3$/),
@@ -43,6 +43,8 @@ export default function SessionScreen() {
 
     const cheerSound = soundFiles.find(sound => sound.includes('ouenn')) || '';
     const keepGoingSound = soundFiles.find(sound => sound.includes('keep')) || '';
+    console.assert(cheerSound, 'Cheer sound not found');
+    console.assert(keepGoingSound, 'Keep going sound not found');
 
     useEffect(() => {
         requestVibrationPermission();
@@ -55,6 +57,10 @@ export default function SessionScreen() {
             interval = setInterval(() => {
                 setTimeRemaining(prev => prev - 1);
             }, 1000);
+        }
+
+        if (timeRemaining === 0) {
+            onEnd();
         }
 
         return () => clearInterval(interval);

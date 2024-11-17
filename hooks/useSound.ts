@@ -27,24 +27,23 @@ export const useSound = ({ soundAssets }: UseSoundOptions): UseSoundReturn => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedSound, setSelectedSound] = useState<string | null>(null);
+  const [isLoadedSuccessfully, setIsLoadedSuccessfully] = useState(false);
   const playbackStatus = useRef<any>(null);
+  const loadingPromise = useRef<Promise<void> | null>(null);
 
-  // 音声の状態を監視するコールバック
   const onPlaybackStatusUpdate = (status: any) => {
     playbackStatus.current = status;
     if (status.isLoaded) {
       setIsPlaying(status.isPlaying);
+      setIsLoadedSuccessfully(true);
 
-      // 再生が終了した場合
       if (status.didJustFinish) {
         setIsPlaying(false);
-        // 位置を最初に戻す
         sound?.setPositionAsync(0);
       }
     }
   };
 
-  // バックグラウンド再生の設定
   const configureAudioMode = async () => {
     try {
       await Audio.setAudioModeAsync({
@@ -59,76 +58,93 @@ export const useSound = ({ soundAssets }: UseSoundOptions): UseSoundReturn => {
     }
   };
 
-  // 音声のロード処理
   const loadSound = useCallback(async () => {
     if (!selectedSound) return;
 
+    // 既に読み込み中の場合は待機
+    if (loadingPromise.current) {
+      await loadingPromise.current;
+      return;
+    }
+
     try {
       setIsLoading(true);
+      setIsLoadedSuccessfully(false);
       console.log("Loading sound:", selectedSound);
 
-      // 既存の音声をアンロード
       if (sound) {
         await sound.unloadAsync();
       }
 
-      const { sound: audioInstance } = await Audio.Sound.createAsync(
-        soundAssets(selectedSound),
-        {
-          shouldPlay: false,
-          isLooping: false,
-          positionMillis: 0,
-          volume: 1.0,
-        },
-        onPlaybackStatusUpdate
-      );
+      loadingPromise.current = (async () => {
+        const { sound: audioInstance } = await Audio.Sound.createAsync(
+          soundAssets(selectedSound),
+          {
+            shouldPlay: false,
+            isLooping: false,
+            positionMillis: 0,
+            volume: 1.0,
+          },
+          onPlaybackStatusUpdate
+        );
 
-      // ロードが完了したことを確認
-      const status = await audioInstance.getStatusAsync();
-      if (!status.isLoaded) {
-        throw new Error("Sound failed to load");
-      }
+        const status = await audioInstance.getStatusAsync();
+        if (!status.isLoaded) {
+          throw new Error("Sound failed to load");
+        }
 
-      setSound(audioInstance);
-      console.log("Sound loaded successfully");
+        setSound(audioInstance);
+        setIsLoadedSuccessfully(true);
+        console.log("Sound loaded successfully", selectedSound, status);
+      })();
+
+      await loadingPromise.current;
     } catch (error) {
       console.error("Error loading sound:", error);
+      setIsLoadedSuccessfully(false);
     } finally {
       setIsLoading(false);
+      loadingPromise.current = null;
     }
   }, [selectedSound, soundAssets]);
 
-  // 音声の再生
   const playSound = async () => {
     try {
-      if (!sound || !playbackStatus.current?.isLoaded) {
+      if (!sound || !isLoadedSuccessfully) {
         await loadSound();
+      }
+
+      // ロードが完了するまで待機
+      if (!isLoadedSuccessfully) {
+        await new Promise<void>((resolve) => {
+          const checkLoaded = setInterval(() => {
+            if (isLoadedSuccessfully) {
+              clearInterval(checkLoaded);
+              resolve();
+            }
+          }, 100);
+        });
       }
 
       const status = await sound?.getStatusAsync();
       if (status?.isLoaded) {
-        // 再生位置を確認し、必要に応じて最初から再生
         if (sound && status.durationMillis && status.positionMillis >= status.durationMillis - 100) {
           await sound.setPositionAsync(0);
         }
-        await sound?.playAsync();
         setIsPlaying(true);
-      } else {
-        console.warn("Sound not properly loaded");
-        await loadSound();
         await sound?.playAsync();
+      } else {
+        throw new Error("Sound not properly loaded");
       }
     } catch (error) {
       console.error("Error playing sound:", error);
-      // エラー時は再ロードを試みる
-      await loadSound();
+      await loadSound(); // エラー時は再ロードを試みる
     }
   };
 
-  // 音声の一時停止
   const pauseSound = async () => {
     try {
-      if (sound && playbackStatus.current?.isLoaded) {
+      if (sound && isLoadedSuccessfully) {
         await sound.pauseAsync();
         setIsPlaying(false);
       }
@@ -137,7 +153,6 @@ export const useSound = ({ soundAssets }: UseSoundOptions): UseSoundReturn => {
     }
   };
 
-  // 音声の選択
   const selectSound = async (soundId: string) => {
     try {
       if (sound) {
@@ -145,16 +160,16 @@ export const useSound = ({ soundAssets }: UseSoundOptions): UseSoundReturn => {
       }
       setSound(null);
       setIsPlaying(false);
+      setIsLoadedSuccessfully(false);
       setSelectedSound(soundId);
     } catch (error) {
       console.error("Error selecting sound:", error);
     }
   };
 
-  // 音声のリセット
   const resetSound = async () => {
     try {
-      if (sound) {
+      if (sound && isLoadedSuccessfully) {
         await sound.stopAsync();
         await sound.setPositionAsync(0);
         setIsPlaying(false);
@@ -164,7 +179,6 @@ export const useSound = ({ soundAssets }: UseSoundOptions): UseSoundReturn => {
     }
   };
 
-  // 初期設定
   useEffect(() => {
     configureAudioMode();
     return () => {
@@ -174,7 +188,6 @@ export const useSound = ({ soundAssets }: UseSoundOptions): UseSoundReturn => {
     };
   }, []);
 
-  // 音声選択時の処理
   useEffect(() => {
     if (selectedSound) {
       loadSound();
