@@ -108,10 +108,10 @@ export const useSound = ({ soundAssets }: UseSoundOptions): UseSoundReturn => {
       const status = await sound?.getStatusAsync();
       if (status?.isLoaded) {
         // 再生位置を確認し、必要に応じて最初から再生
-        if (status.positionMillis >= status.durationMillis - 100) {
+        if (sound && status.durationMillis && status.positionMillis >= status.durationMillis - 100) {
           await sound.setPositionAsync(0);
         }
-        await sound.playAsync();
+        await sound?.playAsync();
         setIsPlaying(true);
       } else {
         console.warn("Sound not properly loaded");
