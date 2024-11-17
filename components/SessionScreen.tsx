@@ -8,8 +8,8 @@ import DebugSignal from "@/components/ui/debug_Signal";
 import { isRunningInProduction } from '@/constants/production';
 import { useBreathingData } from '@/hooks/useBreathingData';
 import * as Haptics from 'expo-haptics';
-
 import { PermissionsAndroid } from 'react-native';
+import { useSound } from '@/hooks/useSound';
 
 async function requestVibrationPermission() {
     try {
@@ -37,6 +37,13 @@ export default function SessionScreen() {
     const [isActive, setIsActive] = useState(true);
     const [timeRemaining, setTimeRemaining] = useState(25 * 60); // 25 minutes in seconds
 
+    const { playSound, pauseSound, selectSound, soundFiles } = useSound({
+        soundAssets: require.context('../assets/sounds', true, /\.mp3$/),
+    });
+
+    const cheerSound = soundFiles.find(sound => sound.includes('ouenn')) || '';
+    const keepGoingSound = soundFiles.find(sound => sound.includes('keep')) || '';
+
     useEffect(() => {
         requestVibrationPermission();
     }, []);
@@ -63,6 +70,8 @@ export default function SessionScreen() {
 
     useEffect(() => {
         if (breathingType.startsWith("深呼吸")) {
+            selectSound(cheerSound);
+            
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         }
     }, [breathingType]);

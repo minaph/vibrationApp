@@ -50,7 +50,7 @@ export default function SettingsScreen() {
                 />
             </View>
 
-            {/* {__DEV__ && !isRunningInProduction && <SoundControl />} */}
+            {__DEV__ && !isRunningInProduction && <SoundControl />}
             {__DEV__ && !isRunningInProduction && <DebugHaptics />}
         </View>
     );
